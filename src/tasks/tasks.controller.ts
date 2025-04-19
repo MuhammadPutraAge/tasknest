@@ -11,6 +11,7 @@ import {
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TasksService } from './tasks.service';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { ResponseHelper } from 'src/common/helpers/response.helper';
 
 @Controller('tasks')
 export class TasksController {
@@ -18,17 +19,20 @@ export class TasksController {
 
   @Get()
   async getTasks() {
-    return await this.tasksService.getTasks();
+    const tasks = await this.tasksService.getTasks();
+    return new ResponseHelper('Successfully retrieved all tasks.', tasks);
   }
 
   @Post()
   async createTask(@Body() body: CreateTaskDto) {
-    return await this.tasksService.createTask(body);
+    const task = await this.tasksService.createTask(body);
+    return new ResponseHelper('Task created successfully.', task);
   }
 
   @Get(':id')
   async getTaskById(@Param('id', ParseIntPipe) id: number) {
-    return await this.tasksService.getTaskById(id);
+    const task = await this.tasksService.getTaskById(id);
+    return new ResponseHelper('Successfully retrieved task.', task);
   }
 
   @Put(':id')
@@ -36,11 +40,13 @@ export class TasksController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateTaskDto,
   ) {
-    return await this.tasksService.updateTask(id, body);
+    const task = await this.tasksService.updateTask(id, body);
+    return new ResponseHelper('Task updated successfully.', task);
   }
 
   @Delete(':id')
   async deleteTask(@Param('id', ParseIntPipe) id: number) {
-    return await this.tasksService.deleteTask(id);
+    await this.tasksService.deleteTask(id);
+    return new ResponseHelper('Task deleted successfully.', null);
   }
 }
