@@ -3,8 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
-  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -30,23 +31,38 @@ export class TasksController {
   }
 
   @Get(':id')
-  async getTaskById(@Param('id', ParseIntPipe) id: number) {
+  async getTaskById(@Param('id') id: number) {
     const task = await this.tasksService.getTaskById(id);
+
+    if (!task)
+      throw new HttpException('Task not found.', HttpStatus.NOT_FOUND, {
+        cause: `There is no task with id: ${id}`,
+      });
+
     return new ResponseHelper('Successfully retrieved task.', task);
   }
 
   @Put(':id')
-  async updateTask(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateTaskDto,
-  ) {
+  async updateTask(@Param('id') id: number, @Body() body: UpdateTaskDto) {
     const task = await this.tasksService.updateTask(id, body);
+
+    if (!task)
+      throw new HttpException('Task not found.', HttpStatus.NOT_FOUND, {
+        cause: `There is no task with id: ${id}`,
+      });
+
     return new ResponseHelper('Task updated successfully.', task);
   }
 
   @Delete(':id')
-  async deleteTask(@Param('id', ParseIntPipe) id: number) {
-    await this.tasksService.deleteTask(id);
+  async deleteTask(@Param('id') id: number) {
+    const task = await this.tasksService.deleteTask(id);
+
+    if (!task)
+      throw new HttpException('Task not found.', HttpStatus.NOT_FOUND, {
+        cause: `There is no task with id: ${id}`,
+      });
+
     return new ResponseHelper('Task deleted successfully.', null);
   }
 }

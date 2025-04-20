@@ -20,10 +20,18 @@ export class TasksService {
   }
 
   async updateTask(id: number, task: UpdateTaskDto) {
+    const selectedTask = await this.getTaskById(id);
+
+    if (!selectedTask) return null;
+
     return await this.prismaService.task.update({ where: { id }, data: task });
   }
 
   async deleteTask(id: number) {
+    const selectedTask = await this.getTaskById(id);
+
+    if (!selectedTask) return null;
+
     return await this.prismaService.task.delete({ where: { id } });
   }
 }

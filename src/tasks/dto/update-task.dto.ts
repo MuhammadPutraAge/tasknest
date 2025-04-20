@@ -1,7 +1,14 @@
 import { TaskStatus } from '@prisma/client';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class UpdateTaskDto {
-  title?: string;
+  @IsString()
+  title: string;
+
+  @IsOptional()
+  @IsString()
   description?: string;
-  status?: TaskStatus;
+
+  @IsEnum(TaskStatus)
+  status: TaskStatus;
 }
