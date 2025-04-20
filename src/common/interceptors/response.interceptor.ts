@@ -6,23 +6,7 @@ import {
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
 import { Response as ExpressResponse } from 'express';
-
-export interface Meta {
-  message: string;
-  code: number;
-  success: boolean;
-}
-
-export interface Response<T, R> {
-  meta: Meta;
-  data?: T;
-  error?: R;
-}
-
-export interface ApiResponse<T> {
-  message: string;
-  data: T;
-}
+import { ApiResponse, Response } from '../interfaces/response';
 
 @Injectable()
 export class ResponseInterceptor<T>
