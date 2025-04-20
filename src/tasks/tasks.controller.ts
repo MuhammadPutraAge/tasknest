@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Post,
   Put,
@@ -33,36 +31,18 @@ export class TasksController {
   @Get(':id')
   async getTaskById(@Param('id') id: number) {
     const task = await this.tasksService.getTaskById(id);
-
-    if (!task)
-      throw new HttpException('Task not found.', HttpStatus.NOT_FOUND, {
-        cause: `There is no task with id: ${id}`,
-      });
-
     return new ResponseHelper('Successfully retrieved task.', task);
   }
 
   @Put(':id')
   async updateTask(@Param('id') id: number, @Body() body: UpdateTaskDto) {
     const task = await this.tasksService.updateTask(id, body);
-
-    if (!task)
-      throw new HttpException('Task not found.', HttpStatus.NOT_FOUND, {
-        cause: `There is no task with id: ${id}`,
-      });
-
     return new ResponseHelper('Task updated successfully.', task);
   }
 
   @Delete(':id')
   async deleteTask(@Param('id') id: number) {
-    const task = await this.tasksService.deleteTask(id);
-
-    if (!task)
-      throw new HttpException('Task not found.', HttpStatus.NOT_FOUND, {
-        cause: `There is no task with id: ${id}`,
-      });
-
+    await this.tasksService.deleteTask(id);
     return new ResponseHelper('Task deleted successfully.', null);
   }
 }
