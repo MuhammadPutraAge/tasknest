@@ -10,12 +10,13 @@ import { Response as ExpressResponse } from 'express';
 export interface Meta {
   message: string;
   code: number;
-  success: 'success' | 'error';
+  success: boolean;
 }
 
-export interface Response<T> {
+export interface Response<T, R> {
   meta: Meta;
-  data: T;
+  data?: T;
+  error?: R;
 }
 
 export interface ApiResponse<T> {
@@ -25,12 +26,14 @@ export interface ApiResponse<T> {
 
 @Injectable()
 export class ResponseInterceptor<T>
-  implements NestInterceptor<ApiResponse<T>, Response<T>>
+  implements NestInterceptor<ApiResponse<T>, Response<T, undefined>>
 {
   intercept(
     context: ExecutionContext,
     next: CallHandler<ApiResponse<T>>,
-  ): Observable<Response<T>> | Promise<Observable<Response<T>>> {
+  ):
+    | Observable<Response<T, undefined>>
+    | Promise<Observable<Response<T, undefined>>> {
     const response = context.switchToHttp().getResponse<ExpressResponse>();
     const code = response.statusCode;
 
@@ -39,7 +42,7 @@ export class ResponseInterceptor<T>
         meta: {
           message: res.message,
           code,
-          success: 'success',
+          success: true,
         },
         data: res.data,
       })),
